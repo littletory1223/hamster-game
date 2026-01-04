@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>햄스터 월드 - 자동 로그인 기능</title>
+    <title>햄스터 월드 - 랭킹 도전!</title>
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         body {
@@ -41,19 +41,19 @@
             }
         }
 
-        /* 🔒 0. 로그인 */
+        /* 🔒 0. 입장 화면 (비밀번호 삭제됨) */
         #loginScreen {
             background-color: white;
             padding: 40px;
             border-radius: 40px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            width: 320px;
+            width: 350px;
             text-align: center;
-            border: 4px solid #2196F3;
+            border: 5px solid #00BCD4;
         }
 
         #loginScreen h1 {
-            color: #1565C0;
+            color: #0097A7;
             margin-bottom: 20px;
             font-size: 2.5rem;
         }
@@ -61,71 +61,53 @@
         .login-input {
             width: 90%;
             padding: 15px;
-            margin-bottom: 15px;
-            border: 2px solid #BBDEFB;
+            margin-bottom: 20px;
+            border: 2px solid #B2EBF2;
             border-radius: 15px;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-family: 'Jua';
             outline: none;
-            transition: 0.3s;
+            text-align: center;
         }
 
         .login-input:focus {
-            border-color: #2196F3;
-            background-color: #E3F2FD;
-        }
-
-        /* 체크박스 스타일 */
-        .checkbox-container {
-            text-align: left;
-            margin-bottom: 20px;
-            padding-left: 10px;
-            color: #555;
-        }
-
-        .checkbox-container input {
-            transform: scale(1.5);
-            margin-right: 10px;
-            cursor: pointer;
-        }
-
-        .checkbox-container label {
-            cursor: pointer;
-            font-size: 1.1rem;
+            border-color: #00BCD4;
+            background-color: #E0F7FA;
         }
 
         .login-btn {
             width: 100%;
             padding: 15px;
-            background-color: #2196F3;
+            background-color: #00BCD4;
             color: white;
             border: none;
             border-radius: 15px;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-family: 'Jua';
             cursor: pointer;
-            box-shadow: 0 5px 0 #0D47A1;
+            box-shadow: 0 5px 0 #00838F;
             transition: 0.1s;
         }
 
         .login-btn:active {
             transform: translateY(3px);
-            box-shadow: 0 2px 0 #0D47A1;
+            box-shadow: 0 2px 0 #00838F;
         }
 
         .error-msg {
             color: #FF5252;
-            font-size: 0.9rem;
-            height: 20px;
+            font-size: 1rem;
+            height: 25px;
             margin-bottom: 5px;
+            font-weight: bold;
         }
 
-        /* 🏠 1. 홈 */
+        /* 🏠 1. 홈 화면 */
         #homeScreen {
             background-color: white;
             padding: 30px;
             border-radius: 30px;
-            border: 5px solid #00BCD4;
+            border: 5px solid #FF9800;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             width: 85%;
             max-width: 700px;
@@ -134,37 +116,26 @@
 
         .welcome-msg {
             color: #555;
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
             text-align: right;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 10px;
         }
 
         .welcome-msg span {
-            color: #0097A7;
+            color: #EF6C00;
             font-weight: bold;
-            font-size: 1.4rem;
-        }
-
-        .sm-btn {
-            padding: 5px 10px;
-            font-size: 0.9rem;
-            border-radius: 8px;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-family: 'Jua';
+            font-size: 1.5rem;
         }
 
         .logout-btn {
             background-color: #90A4AE;
-        }
-
-        .pw-btn {
-            background-color: #FF9800;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Jua';
+            margin-left: 10px;
         }
 
         .settings-grid {
@@ -185,7 +156,7 @@
         .input-box input {
             width: 85%;
             padding: 8px;
-            border: 2px solid #B2EBF2;
+            border: 2px solid #FFE0B2;
             border-radius: 8px;
             font-family: 'Jua';
             text-align: center;
@@ -214,58 +185,9 @@
         }
 
         #checkBtn {
-            background-color: #607D8B;
+            background-color: #78909C;
             box-shadow: 0 5px 0 #455A64;
             flex: 1;
-        }
-
-        #pwModal {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 25px;
-            z-index: 100;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 20px;
-            width: 300px;
-            text-align: center;
-            border: 4px solid #FF9800;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-family: 'Jua';
-            font-size: 1.1rem;
-            color: white;
-        }
-
-        .save-btn {
-            background-color: #FF9800;
-        }
-
-        .cancel-btn {
-            background-color: #ccc;
         }
 
         /* 🔧 2. 점검 화면 */
@@ -323,10 +245,6 @@
             font-size: 1.2rem;
         }
 
-        #backBtn:hover {
-            background-color: #455A64;
-        }
-
         /* 🎮 3. 게임 화면 */
         #gameScreen {
             position: relative;
@@ -374,62 +292,41 @@
     <div id="loginScreen" class="fade-in">
         <h1>🐹 햄스터 월드</h1>
         <div class="error-msg" id="loginError"></div>
-        <input type="text" id="userId" class="login-input" placeholder="아이디 (이름)">
-        <input type="password" id="userPw" class="login-input" placeholder="비밀번호 (1234)">
-
-        <div class="checkbox-container">
-            <label>
-                <input type="checkbox" id="rememberMe"> 로그인 기억하기 (자동 접속)
-            </label>
-        </div>
-
-        <button class="login-btn" onclick="tryLogin()">로그인</button>
+        <input type="text" id="userId" class="login-input" placeholder="이름(닉네임)을 입력하세요">
+        <button class="login-btn" onclick="tryLogin()">게임 입장하기 🚀</button>
     </div>
 
     <div id="homeScreen" class="hidden">
         <div class="welcome-msg">
-            <div><span id="displayUser">게스트</span>님 안녕하세요!</div>
-            <button class="sm-btn pw-btn" onclick="openPwModal()">🔑비번변경</button>
-            <button class="sm-btn logout-btn" onclick="logout()">로그아웃</button>
+            <span id="displayUser">게스트</span>님 환영합니다!
+            <button class="logout-btn" onclick="logout()">나가기</button>
         </div>
-        <h1 style="color:#0097A7; margin-top:0;">🎮 게임 설정</h1>
+        <h1 style="color:#EF6C00; margin-top:0;">🎮 게임 만들기</h1>
 
         <div class="input-box" style="margin-bottom: 10px;">
-            <label>📝 방 제목</label>
+            <label>📝 게임 제목</label>
             <input type="text" id="ruleTitle" value="전설의 미로 찾기" style="width: 97%;">
         </div>
 
         <div class="settings-grid">
+            <div class="input-box"><label>🏆 난이도(Stage 1~10)</label><input type="number" id="ruleLevel" value="3"
+                    min="1" max="10"></div>
+            <div class="input-box"><label>❤️ 목숨 (Life)</label><input type="number" id="ruleLives" value="3" min="1"
+                    max="100"></div>
+            <div class="input-box"><label>⏰ 시간 (Time)</label><input type="number" id="ruleTime" value="60" min="10">
+            </div>
+
             <div class="input-box"><label>🧱 벽 개수 (0~100)</label><input type="number" id="ruleWall" value="30" min="0"
-                    max="100" style="background-color:#E0F2F1;"></div>
-            <div class="input-box"><label>❤️ 목숨 개수</label><input type="number" id="ruleLives" value="5" min="1"
                     max="100"></div>
             <div class="input-box"><label>👻 유령 수</label><input type="number" id="ruleGhost" value="3" min="0" max="50">
             </div>
-            <div class="input-box"><label>🏆 적 난이도(1~10)</label><input type="number" id="ruleLevel" value="3" min="1"
-                    max="10"></div>
-            <div class="input-box"><label>⏰ 시간 (초)</label><input type="number" id="ruleTime" value="60" min="10"></div>
-            <div class="input-box"><label>🏃 속도 (1~15)</label><input type="number" id="ruleSpeed" value="7" min="1"
-                    max="15"></div>
+            <div class="input-box"><label>🏃 속도</label><input type="number" id="ruleSpeed" value="7" min="1" max="15">
+            </div>
         </div>
 
         <div class="btn-group">
-            <button class="big-btn" id="checkBtn" onclick="goToDebug()">🔧 점검</button>
+            <button class="big-btn" id="checkBtn" onclick="goToDebug()">🔧 시스템 점검</button>
             <button class="big-btn" id="startBtn" onclick="goToGame()">▶️ 게임 시작</button>
-        </div>
-
-        <div id="pwModal" class="hidden">
-            <div class="modal-content">
-                <h2>🔑 비밀번호 변경</h2>
-                <div class="error-msg" id="pwError"></div>
-                <div class="input-box" style="margin-bottom:10px;"><input type="password" id="oldPw"
-                        placeholder="현재 비밀번호"></div>
-                <div class="input-box"><input type="password" id="newPw" placeholder="새로운 비밀번호"></div>
-                <div class="modal-btn-group">
-                    <button class="modal-btn cancel-btn" onclick="closePwModal()">취소</button>
-                    <button class="modal-btn save-btn" onclick="changePassword()">변경하기</button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -437,7 +334,7 @@
         <h2>🛠️ SYSTEM DIAGNOSTIC</h2>
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div style="flex:1;">
-                <p>KEYBOARD INPUT</p>
+                <p>CONTROLS CHECK</p>
                 <div class="key-test">
                     <div></div>
                     <div id="keyUp" class="key-btn">▲</div>
@@ -446,7 +343,7 @@
                     <div id="keyDown" class="key-btn">▼</div>
                     <div id="keyRight" class="key-btn">▶</div>
                 </div>
-                <p style="margin-top:20px; font-size:0.9rem;">[MINI GAME] Dodge Ghosts 👻</p>
+                <p style="margin-top:20px; font-size:0.9rem;">[MINI GAME ACTIVE]</p>
             </div>
             <div
                 style="text-align:center; border:1px solid #00E676; padding:10px; border-radius:5px; margin-left:20px;">
@@ -461,80 +358,46 @@
     </div>
 
     <div id="gameScreen" class="hidden">
-        <div id="uiLayer"><span id="uiLives">❤️ 5</span><span id="uiTitle">제목</span><span id="uiTime">⏰ 60</span></div>
+        <div id="uiLayer"><span id="uiLives">❤️ 3</span><span id="uiTitle">제목</span><span id="uiTime">⏰ 60</span></div>
         <canvas id="gameCanvas" width="800" height="500"></canvas>
         <button id="homeBtn" onclick="goToHome()">🏠 홈으로</button>
     </div>
 
     <script>
         let currentUser = "";
-        let savedPassword = "1234";
 
         const loginScreen = document.getElementById("loginScreen");
         const homeScreen = document.getElementById("homeScreen");
         const debugScreen = document.getElementById("debugScreen");
         const gameScreen = document.getElementById("gameScreen");
-        const pwModal = document.getElementById("pwModal");
 
-        // ★ 페이지 시작 시 자동 로그인 체크 ★
-        window.onload = function () {
-            // 저장된 정보가 있는지 확인 (localStorage 사용)
-            const savedUser = localStorage.getItem("savedUser");
-            if (savedUser) {
-                currentUser = savedUser;
-                document.getElementById("displayUser").innerText = currentUser;
-                // 바로 홈 화면으로 이동
-                loginScreen.classList.add("hidden");
-                homeScreen.classList.remove("hidden");
-                document.body.style.backgroundColor = "#E0F7FA";
-                console.log("자동 로그인 성공!");
-            }
-        };
-
-        // --- 로그인 & 비번 ---
+        // --- 🔓 간편 입장 로직 (비번 삭제) ---
         function tryLogin() {
             const id = document.getElementById("userId").value;
-            const pw = document.getElementById("userPw").value;
-            const remember = document.getElementById("rememberMe").checked; // 체크박스 상태
             const err = document.getElementById("loginError");
 
-            if (id === "") { err.innerText = "아이디를 입력해주세요!"; return; }
-            if (pw !== savedPassword) { err.innerText = "비밀번호가 틀렸어요!"; return; }
+            // 빈칸 체크
+            if (id.trim() === "") {
+                err.innerText = "이름을 꼭 입력해주세요!";
+                return;
+            }
 
             currentUser = id;
             document.getElementById("displayUser").innerText = currentUser;
 
-            // ★ 체크했으면 저장, 아니면 삭제 ★
-            if (remember) {
-                localStorage.setItem("savedUser", id);
-            } else {
-                localStorage.removeItem("savedUser");
-            }
-
-            loginScreen.classList.add("hidden"); homeScreen.classList.remove("hidden"); homeScreen.classList.add("fade-in");
-            document.body.style.backgroundColor = "#E0F7FA";
+            // 화면 전환
+            loginScreen.classList.add("hidden");
+            homeScreen.classList.remove("hidden");
+            homeScreen.classList.add("fade-in");
+            document.body.style.backgroundColor = "#FFF3E0"; // 홈 배경색 (따뜻한 색)
         }
 
         function logout() {
             document.getElementById("userId").value = "";
-            document.getElementById("userPw").value = "";
             document.getElementById("loginError").innerText = "";
-            document.getElementById("rememberMe").checked = false; // 체크 해제
-
-            // ★ 로그아웃 시 저장된 정보 삭제 (보안상)
-            localStorage.removeItem("savedUser");
-
-            homeScreen.classList.add("hidden"); loginScreen.classList.remove("hidden");
+            homeScreen.classList.add("hidden");
+            loginScreen.classList.remove("hidden");
             document.body.style.backgroundColor = "#E3F2FD";
-        }
-
-        function openPwModal() { document.getElementById("oldPw").value = ""; document.getElementById("newPw").value = ""; document.getElementById("pwError").innerText = ""; pwModal.classList.remove("hidden"); }
-        function closePwModal() { pwModal.classList.add("hidden"); }
-        function changePassword() {
-            const oldPw = document.getElementById("oldPw").value; const newPw = document.getElementById("newPw").value; const err = document.getElementById("pwError");
-            if (oldPw !== savedPassword) { err.innerText = "현재 비밀번호가 틀려요!"; return; }
-            if (newPw === "") { err.innerText = "새 비밀번호를 입력하세요!"; return; }
-            savedPassword = newPw; alert("비밀번호 변경 완료!"); closePwModal();
         }
 
         // --- 화면 이동 ---
@@ -549,14 +412,14 @@
 
             if (wallDensity < 0) wallDensity = 0; if (wallDensity > 100) wallDensity = 100;
 
-            initGame(t, wallDensity, g, hp, sp, tm);
+            initGame(t, wallDensity, l, g, hp, sp, tm); // Level도 전달
             homeScreen.classList.add("hidden"); gameScreen.classList.remove("hidden");
             document.body.style.backgroundColor = "#37474F";
         }
         function goToHome() {
             isGameOver = true; isGameRunning = false;
             gameScreen.classList.add("hidden"); homeScreen.classList.remove("hidden");
-            document.body.style.backgroundColor = "#E0F7FA";
+            document.body.style.backgroundColor = "#FFF3E0";
         }
         function goToDebug() {
             homeScreen.classList.add("hidden"); debugScreen.classList.remove("hidden");
@@ -569,7 +432,16 @@
         }
         function exitDebug() {
             isDebugMode = false; debugScreen.classList.add("hidden"); homeScreen.classList.remove("hidden");
-            document.body.style.backgroundColor = "#E0F7FA";
+            document.body.style.backgroundColor = "#FFF3E0";
+        }
+
+        // --- ★ 점수 계산 함수 ★ ---
+        function calculateScore() {
+            // 공식: (난이도 * 1000) + (남은목숨 * 500) + (남은시간 * 100)
+            let stageScore = gameSettings.level * 1000;
+            let lifeScore = lives * 500;
+            let timeScore = Math.floor(timeLeft) * 100;
+            return stageScore + lifeScore + timeScore;
         }
 
         // --- 점검 모드 ---
@@ -652,10 +524,15 @@
         let keys = { right: false, left: false, up: false, down: false };
         let lives = 3, timeLeft = 60, isGameOver = false, isGameRunning = false, gameOverReason = "";
         let effectTimer = null; const CELL_SIZE = 40;
+        let gameSettings = {}; // 점수 계산용 설정 저장
 
-        function initGame(title, density, ghostCnt, lifeCnt, speed, time) {
+        function initGame(title, density, level, ghostCnt, lifeCnt, speed, time) {
             uiTitle.innerText = title; lives = lifeCnt; timeLeft = time;
             player.baseSpeed = speed; player.speed = speed;
+
+            // 점수 계산을 위해 설정 저장
+            gameSettings = { level: level, maxLives: lifeCnt, maxTime: time };
+
             isGameOver = false; isGameRunning = true; gameOverReason = "";
             let maze = generateMaze(density); // 벽 개수 전달
             walls = createWalls(maze);
@@ -803,11 +680,35 @@
             if (player.freeze) emo = "🥶"; else if (player.confuse) emo = "😵‍💫"; else if (player.invinc) emo = "😎"; else if (player.speed >= 10) emo = "🚀";
             ctx.fillText(emo, px, py); if (player.invinc) { ctx.strokeStyle = "white"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(px, py, 18, 0, Math.PI * 2); ctx.stroke(); }
             for (let p of particles) { ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI * 2); ctx.fill(); } ctx.globalAlpha = 1.0;
+
+            // ★ 게임 오버 / 클리어 화면 (점수 표시) ★
             if (isGameOver) {
-                ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = "white"; ctx.font = "60px 'Jua'"; ctx.textAlign = "center";
-                let t = "", s = ""; if (gameOverReason == "clear") { t = "🎉 성공!"; s = "스페이스바 = 홈으로"; }
-                else if (gameOverReason == "time") { t = "⏰ 시간 초과"; s = "스페이스바 = 홈으로"; } else { t = "😭 으앙 쥬금"; s = "스페이스바 = 홈으로"; }
-                ctx.fillText(t, canvas.width / 2, canvas.height / 2 - 20); ctx.font = "30px 'Jua'"; ctx.fillStyle = "#B0BEC5"; ctx.fillText(s, canvas.width / 2, canvas.height / 2 + 40);
+                ctx.fillStyle = "rgba(0,0,0,0.85)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.textAlign = "center";
+                let t = "", s = "", scText = "";
+
+                if (gameOverReason == "clear") {
+                    let totalScore = calculateScore();
+                    t = "🏆 STAGE CLEAR!";
+                    s = "이름: " + currentUser;
+                    scText = "최종 점수: " + totalScore + "점";
+                    ctx.fillStyle = "gold";
+                }
+                else {
+                    t = "💀 GAME OVER";
+                    s = "다시 도전해보세요!";
+                    scText = "점수: 0점 (실패)";
+                    ctx.fillStyle = "#FF5252";
+                }
+
+                ctx.font = "60px 'Jua'"; ctx.fillText(t, canvas.width / 2, canvas.height / 2 - 50);
+
+                ctx.fillStyle = "white";
+                ctx.font = "40px 'Jua'"; ctx.fillText(scText, canvas.width / 2, canvas.height / 2 + 20);
+
+                ctx.font = "25px 'Jua'"; ctx.fillStyle = "#B0BEC5";
+                ctx.fillText(s, canvas.width / 2, canvas.height / 2 + 70);
+                ctx.fillText("[Space Bar]를 눌러 홈으로", canvas.width / 2, canvas.height / 2 + 110);
             }
         }
         loop();

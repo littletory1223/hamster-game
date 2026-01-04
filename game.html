@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>햄스터 월드 - 자동 로그인 기능</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        body {
+            text-align: center;
+            background-color: #E3F2FD;
+            font-family: 'Jua', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            user-select: none;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.5s;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 🔒 0. 로그인 */
+        #loginScreen {
+            background-color: white;
+            padding: 40px;
+            border-radius: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 320px;
+            text-align: center;
+            border: 4px solid #2196F3;
+        }
+
+        #loginScreen h1 {
+            color: #1565C0;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+
+        .login-input {
+            width: 90%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 2px solid #BBDEFB;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-family: 'Jua';
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .login-input:focus {
+            border-color: #2196F3;
+            background-color: #E3F2FD;
+        }
+
+        /* 체크박스 스타일 */
+        .checkbox-container {
+            text-align: left;
+            margin-bottom: 20px;
+            padding-left: 10px;
+            color: #555;
+        }
+
+        .checkbox-container input {
+            transform: scale(1.5);
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-container label {
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-family: 'Jua';
+            cursor: pointer;
+            box-shadow: 0 5px 0 #0D47A1;
+            transition: 0.1s;
+        }
+
+        .login-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #0D47A1;
+        }
+
+        .error-msg {
+            color: #FF5252;
+            font-size: 0.9rem;
+            height: 20px;
+            margin-bottom: 5px;
+        }
+
+        /* 🏠 1. 홈 */
+        #homeScreen {
+            background-color: white;
+            padding: 30px;
+            border-radius: 30px;
+            border: 5px solid #00BCD4;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 85%;
+            max-width: 700px;
+            position: relative;
+        }
+
+        .welcome-msg {
+            color: #555;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .welcome-msg span {
+            color: #0097A7;
+            font-weight: bold;
+            font-size: 1.4rem;
+        }
+
+        .sm-btn {
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-family: 'Jua';
+        }
+
+        .logout-btn {
+            background-color: #90A4AE;
+        }
+
+        .pw-btn {
+            background-color: #FF9800;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .input-box label {
+            display: block;
+            color: #555;
+            margin-bottom: 3px;
+            font-size: 0.95rem;
+        }
+
+        .input-box input {
+            width: 85%;
+            padding: 8px;
+            border: 2px solid #B2EBF2;
+            border-radius: 8px;
+            font-family: 'Jua';
+            text-align: center;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button.big-btn {
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Jua';
+            flex: 1;
+            padding: 15px;
+            font-size: 1.3rem;
+            color: white;
+        }
+
+        #startBtn {
+            background-color: #FF5252;
+            box-shadow: 0 5px 0 #D32F2F;
+            flex: 2;
+        }
+
+        #checkBtn {
+            background-color: #607D8B;
+            box-shadow: 0 5px 0 #455A64;
+            flex: 1;
+        }
+
+        #pwModal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 25px;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 20px;
+            width: 300px;
+            text-align: center;
+            border: 4px solid #FF9800;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Jua';
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .save-btn {
+            background-color: #FF9800;
+        }
+
+        .cancel-btn {
+            background-color: #ccc;
+        }
+
+        /* 🔧 2. 점검 화면 */
+        #debugScreen {
+            background-color: #263238;
+            color: #00E676;
+            font-family: 'Share Tech Mono', monospace;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #00E676;
+            width: 90%;
+            max-width: 700px;
+            text-align: left;
+            outline: none;
+        }
+
+        .key-test {
+            display: grid;
+            grid-template-columns: 60px 60px 60px;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .key-btn {
+            border: 2px solid #00E676;
+            height: 60px;
+            width: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            border-radius: 10px;
+            transition: 0.1s;
+            background-color: #263238;
+            color: #00E676;
+        }
+
+        .key-active {
+            background-color: #00E676 !important;
+            color: #000 !important;
+            box-shadow: 0 0 15px #00E676;
+            transform: scale(0.95);
+        }
+
+        #backBtn {
+            background-color: #37474F;
+            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            border: none;
+            color: white;
+            font-family: 'Share Tech Mono';
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        #backBtn:hover {
+            background-color: #455A64;
+        }
+
+        /* 🎮 3. 게임 화면 */
+        #gameScreen {
+            position: relative;
+        }
+
+        canvas {
+            background-color: #fff;
+            border: 8px solid #546E7A;
+            border-radius: 20px;
+            display: block;
+        }
+
+        #uiLayer {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+            font-size: 1.5rem;
+            color: #37474F;
+            text-shadow: 1px 1px 0 white;
+        }
+
+        #homeBtn {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #546E7A;
+            padding: 10px;
+            width: 200px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Jua';
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loginScreen" class="fade-in">
+        <h1>🐹 햄스터 월드</h1>
+        <div class="error-msg" id="loginError"></div>
+        <input type="text" id="userId" class="login-input" placeholder="아이디 (이름)">
+        <input type="password" id="userPw" class="login-input" placeholder="비밀번호 (1234)">
+
+        <div class="checkbox-container">
+            <label>
+                <input type="checkbox" id="rememberMe"> 로그인 기억하기 (자동 접속)
+            </label>
+        </div>
+
+        <button class="login-btn" onclick="tryLogin()">로그인</button>
+    </div>
+
+    <div id="homeScreen" class="hidden">
+        <div class="welcome-msg">
+            <div><span id="displayUser">게스트</span>님 안녕하세요!</div>
+            <button class="sm-btn pw-btn" onclick="openPwModal()">🔑비번변경</button>
+            <button class="sm-btn logout-btn" onclick="logout()">로그아웃</button>
+        </div>
+        <h1 style="color:#0097A7; margin-top:0;">🎮 게임 설정</h1>
+
+        <div class="input-box" style="margin-bottom: 10px;">
+            <label>📝 방 제목</label>
+            <input type="text" id="ruleTitle" value="전설의 미로 찾기" style="width: 97%;">
+        </div>
+
+        <div class="settings-grid">
+            <div class="input-box"><label>🧱 벽 개수 (0~100)</label><input type="number" id="ruleWall" value="30" min="0"
+                    max="100" style="background-color:#E0F2F1;"></div>
+            <div class="input-box"><label>❤️ 목숨 개수</label><input type="number" id="ruleLives" value="5" min="1"
+                    max="100"></div>
+            <div class="input-box"><label>👻 유령 수</label><input type="number" id="ruleGhost" value="3" min="0" max="50">
+            </div>
+            <div class="input-box"><label>🏆 적 난이도(1~10)</label><input type="number" id="ruleLevel" value="3" min="1"
+                    max="10"></div>
+            <div class="input-box"><label>⏰ 시간 (초)</label><input type="number" id="ruleTime" value="60" min="10"></div>
+            <div class="input-box"><label>🏃 속도 (1~15)</label><input type="number" id="ruleSpeed" value="7" min="1"
+                    max="15"></div>
+        </div>
+
+        <div class="btn-group">
+            <button class="big-btn" id="checkBtn" onclick="goToDebug()">🔧 점검</button>
+            <button class="big-btn" id="startBtn" onclick="goToGame()">▶️ 게임 시작</button>
+        </div>
+
+        <div id="pwModal" class="hidden">
+            <div class="modal-content">
+                <h2>🔑 비밀번호 변경</h2>
+                <div class="error-msg" id="pwError"></div>
+                <div class="input-box" style="margin-bottom:10px;"><input type="password" id="oldPw"
+                        placeholder="현재 비밀번호"></div>
+                <div class="input-box"><input type="password" id="newPw" placeholder="새로운 비밀번호"></div>
+                <div class="modal-btn-group">
+                    <button class="modal-btn cancel-btn" onclick="closePwModal()">취소</button>
+                    <button class="modal-btn save-btn" onclick="changePassword()">변경하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="debugScreen" class="hidden" tabindex="0">
+        <h2>🛠️ SYSTEM DIAGNOSTIC</h2>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div style="flex:1;">
+                <p>KEYBOARD INPUT</p>
+                <div class="key-test">
+                    <div></div>
+                    <div id="keyUp" class="key-btn">▲</div>
+                    <div></div>
+                    <div id="keyLeft" class="key-btn">◀</div>
+                    <div id="keyDown" class="key-btn">▼</div>
+                    <div id="keyRight" class="key-btn">▶</div>
+                </div>
+                <p style="margin-top:20px; font-size:0.9rem;">[MINI GAME] Dodge Ghosts 👻</p>
+            </div>
+            <div
+                style="text-align:center; border:1px solid #00E676; padding:10px; border-radius:5px; margin-left:20px;">
+                <p>TEST FIELD</p>
+                <canvas id="debugCanvas" width="200" height="150"
+                    style="border:1px solid #00E676; background:#111; border-radius:5px;"></canvas>
+            </div>
+        </div>
+        <div style="margin-top:20px; background:black; padding:10px; height:100px; overflow-y:scroll; color:#ccc; font-size:0.8rem; border:1px solid #00E676;"
+            id="logBox"></div>
+        <button id="backBtn" onclick="exitDebug()">[ EXIT MAINTENANCE MODE ]</button>
+    </div>
+
+    <div id="gameScreen" class="hidden">
+        <div id="uiLayer"><span id="uiLives">❤️ 5</span><span id="uiTitle">제목</span><span id="uiTime">⏰ 60</span></div>
+        <canvas id="gameCanvas" width="800" height="500"></canvas>
+        <button id="homeBtn" onclick="goToHome()">🏠 홈으로</button>
+    </div>
+
+    <script>
+        let currentUser = "";
+        let savedPassword = "1234";
+
+        const loginScreen = document.getElementById("loginScreen");
+        const homeScreen = document.getElementById("homeScreen");
+        const debugScreen = document.getElementById("debugScreen");
+        const gameScreen = document.getElementById("gameScreen");
+        const pwModal = document.getElementById("pwModal");
+
+        // ★ 페이지 시작 시 자동 로그인 체크 ★
+        window.onload = function () {
+            // 저장된 정보가 있는지 확인 (localStorage 사용)
+            const savedUser = localStorage.getItem("savedUser");
+            if (savedUser) {
+                currentUser = savedUser;
+                document.getElementById("displayUser").innerText = currentUser;
+                // 바로 홈 화면으로 이동
+                loginScreen.classList.add("hidden");
+                homeScreen.classList.remove("hidden");
+                document.body.style.backgroundColor = "#E0F7FA";
+                console.log("자동 로그인 성공!");
+            }
+        };
+
+        // --- 로그인 & 비번 ---
+        function tryLogin() {
+            const id = document.getElementById("userId").value;
+            const pw = document.getElementById("userPw").value;
+            const remember = document.getElementById("rememberMe").checked; // 체크박스 상태
+            const err = document.getElementById("loginError");
+
+            if (id === "") { err.innerText = "아이디를 입력해주세요!"; return; }
+            if (pw !== savedPassword) { err.innerText = "비밀번호가 틀렸어요!"; return; }
+
+            currentUser = id;
+            document.getElementById("displayUser").innerText = currentUser;
+
+            // ★ 체크했으면 저장, 아니면 삭제 ★
+            if (remember) {
+                localStorage.setItem("savedUser", id);
+            } else {
+                localStorage.removeItem("savedUser");
+            }
+
+            loginScreen.classList.add("hidden"); homeScreen.classList.remove("hidden"); homeScreen.classList.add("fade-in");
+            document.body.style.backgroundColor = "#E0F7FA";
+        }
+
+        function logout() {
+            document.getElementById("userId").value = "";
+            document.getElementById("userPw").value = "";
+            document.getElementById("loginError").innerText = "";
+            document.getElementById("rememberMe").checked = false; // 체크 해제
+
+            // ★ 로그아웃 시 저장된 정보 삭제 (보안상)
+            localStorage.removeItem("savedUser");
+
+            homeScreen.classList.add("hidden"); loginScreen.classList.remove("hidden");
+            document.body.style.backgroundColor = "#E3F2FD";
+        }
+
+        function openPwModal() { document.getElementById("oldPw").value = ""; document.getElementById("newPw").value = ""; document.getElementById("pwError").innerText = ""; pwModal.classList.remove("hidden"); }
+        function closePwModal() { pwModal.classList.add("hidden"); }
+        function changePassword() {
+            const oldPw = document.getElementById("oldPw").value; const newPw = document.getElementById("newPw").value; const err = document.getElementById("pwError");
+            if (oldPw !== savedPassword) { err.innerText = "현재 비밀번호가 틀려요!"; return; }
+            if (newPw === "") { err.innerText = "새 비밀번호를 입력하세요!"; return; }
+            savedPassword = newPw; alert("비밀번호 변경 완료!"); closePwModal();
+        }
+
+        // --- 화면 이동 ---
+        function goToGame() {
+            let t = document.getElementById("ruleTitle").value;
+            let wallDensity = parseInt(document.getElementById("ruleWall").value);
+            let l = parseInt(document.getElementById("ruleLevel").value);
+            let g = parseInt(document.getElementById("ruleGhost").value);
+            let hp = parseInt(document.getElementById("ruleLives").value);
+            let sp = parseInt(document.getElementById("ruleSpeed").value);
+            let tm = parseInt(document.getElementById("ruleTime").value);
+
+            if (wallDensity < 0) wallDensity = 0; if (wallDensity > 100) wallDensity = 100;
+
+            initGame(t, wallDensity, g, hp, sp, tm);
+            homeScreen.classList.add("hidden"); gameScreen.classList.remove("hidden");
+            document.body.style.backgroundColor = "#37474F";
+        }
+        function goToHome() {
+            isGameOver = true; isGameRunning = false;
+            gameScreen.classList.add("hidden"); homeScreen.classList.remove("hidden");
+            document.body.style.backgroundColor = "#E0F7FA";
+        }
+        function goToDebug() {
+            homeScreen.classList.add("hidden"); debugScreen.classList.remove("hidden");
+            document.body.style.backgroundColor = "#111";
+            isDebugMode = true; addLog("Mini-Game Loaded.");
+            debugPos = { x: 100, y: 75, speed: 2, frozen: false, shield: false };
+            debugGhosts = [{ x: 20, y: 20, vx: 1.5, vy: 1.5 }, { x: 150, y: 120, vx: -2, vy: -1.5 }];
+            debugItems = []; debugStats = { lives: 3, score: 0, hitTimer: 0 };
+            debugScreen.focus(); debugLoop();
+        }
+        function exitDebug() {
+            isDebugMode = false; debugScreen.classList.add("hidden"); homeScreen.classList.remove("hidden");
+            document.body.style.backgroundColor = "#E0F7FA";
+        }
+
+        // --- 점검 모드 ---
+        const dCtx = document.getElementById("debugCanvas").getContext("2d");
+        const logBox = document.getElementById("logBox");
+        let isDebugMode = false;
+        let debugPos = { x: 100, y: 75, speed: 2, frozen: false, shield: false };
+        let debugKeys = { up: false, down: false, left: false, right: false };
+        let debugGhosts = [], debugItems = [], debugStats = { lives: 3, score: 0, hitTimer: 0 };
+        let debugTimer = null;
+
+        function addLog(m) { logBox.innerHTML += `> ${m}<br>`; logBox.scrollTop = logBox.scrollHeight; }
+        function updateKeyUI(k, p) {
+            let id = ""; if (k == "ArrowUp") id = "keyUp"; if (k == "ArrowDown") id = "keyDown"; if (k == "ArrowLeft") id = "keyLeft"; if (k == "ArrowRight") id = "keyRight";
+            if (id) { let el = document.getElementById(id); if (p) el.classList.add("key-active"); else el.classList.remove("key-active"); }
+        }
+        function resetDebugEffect() { debugPos.speed = 2; debugPos.frozen = false; debugPos.shield = false; if (debugTimer) clearTimeout(debugTimer); }
+
+        function debugLoop() {
+            if (!isDebugMode) return;
+            dCtx.clearRect(0, 0, 200, 150);
+            if (debugStats.lives <= 0) {
+                dCtx.fillStyle = "red"; dCtx.font = "20px Arial"; dCtx.textAlign = "center"; dCtx.fillText("GAME OVER", 100, 75);
+                if (Math.random() < 0.05) { debugStats.lives = 3; debugStats.score = 0; debugPos.x = 100; debugPos.y = 75; addLog("Resetting..."); }
+                requestAnimationFrame(debugLoop); return;
+            }
+            if (debugItems.length < 2 && Math.random() < 0.02) {
+                let types = ["⚡", "🐢", "🛡️", "🧊", "⭐"]; let t = types[Math.floor(Math.random() * types.length)];
+                debugItems.push({ x: 20 + Math.random() * 160, y: 20 + Math.random() * 110, type: t });
+            }
+            if (!debugPos.frozen) {
+                if (debugKeys.up) debugPos.y -= debugPos.speed; if (debugKeys.down) debugPos.y += debugPos.speed;
+                if (debugKeys.left) debugPos.x -= debugPos.speed; if (debugKeys.right) debugPos.x += debugPos.speed;
+            }
+            if (debugPos.x < 10) debugPos.x = 10; if (debugPos.x > 190) debugPos.x = 190;
+            if (debugPos.y < 25) debugPos.y = 25; if (debugPos.y > 135) debugPos.y = 135;
+
+            for (let i = debugItems.length - 1; i >= 0; i--) {
+                let it = debugItems[i]; dCtx.font = "16px Arial"; dCtx.textAlign = "center"; dCtx.textBaseline = "middle"; dCtx.fillText(it.type, it.x, it.y);
+                if (Math.abs(debugPos.x - it.x) < 15 && Math.abs(debugPos.y - it.y) < 15) {
+                    debugItems.splice(i, 1);
+                    if (it.type == "⭐") { debugStats.score += 100; addLog("Score +100"); }
+                    else {
+                        resetDebugEffect();
+                        if (it.type == "⚡") { debugPos.speed = 4; addLog("Speed UP!"); } if (it.type == "🐢") { debugPos.speed = 0.5; addLog("Slow..."); }
+                        if (it.type == "🛡️") { debugPos.shield = true; addLog("Shield ON"); } if (it.type == "🧊") { debugPos.frozen = true; addLog("Frozen!"); }
+                        debugTimer = setTimeout(resetDebugEffect, 2000);
+                    }
+                }
+            }
+            if (debugStats.hitTimer > 0) debugStats.hitTimer--;
+            let hit = false;
+            for (let g of debugGhosts) {
+                g.x += g.vx; g.y += g.vy;
+                if (g.x < 10 || g.x > 190) g.vx *= -1; if (g.y < 25 || g.y > 140) g.vy *= -1;
+                dCtx.font = "20px Arial"; dCtx.fillText("👻", g.x, g.y);
+                if (!debugPos.shield && debugStats.hitTimer == 0 && Math.abs(debugPos.x - g.x) < 20 && Math.abs(debugPos.y - g.y) < 20) {
+                    hit = true; debugStats.lives--; debugStats.hitTimer = 60; addLog("Hit! -1 Life");
+                }
+            }
+            if (debugStats.hitTimer % 10 < 5) {
+                let emo = "🐹"; if (debugPos.frozen) emo = "🥶"; if (debugPos.shield) emo = "😎";
+                dCtx.fillText(emo, debugPos.x, debugPos.y);
+            }
+            dCtx.fillStyle = "white"; dCtx.font = "12px monospace"; dCtx.textAlign = "left"; dCtx.fillText("❤️" + debugStats.lives, 10, 15);
+            dCtx.textAlign = "right"; dCtx.fillText("⭐" + debugStats.score, 190, 15);
+            if (hit || debugStats.hitTimer > 0) { dCtx.strokeStyle = "red"; dCtx.lineWidth = 3; } else if (debugPos.shield) { dCtx.strokeStyle = "gold"; dCtx.lineWidth = 3; } else { dCtx.strokeStyle = "#00E676"; dCtx.lineWidth = 1; }
+            dCtx.strokeRect(0, 0, 200, 150);
+            requestAnimationFrame(debugLoop);
+        }
+
+        // --- 게임 엔진 ---
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const uiTitle = document.getElementById("uiTitle");
+        const uiLives = document.getElementById("uiLives");
+        const uiTime = document.getElementById("uiTime");
+        let player = { x: 0, y: 0, size: 24, speed: 5, baseSpeed: 5, invinc: false, confuse: false, freeze: false };
+        let walls = [], items = [], enemies = [], particles = [];
+        let keys = { right: false, left: false, up: false, down: false };
+        let lives = 3, timeLeft = 60, isGameOver = false, isGameRunning = false, gameOverReason = "";
+        let effectTimer = null; const CELL_SIZE = 40;
+
+        function initGame(title, density, ghostCnt, lifeCnt, speed, time) {
+            uiTitle.innerText = title; lives = lifeCnt; timeLeft = time;
+            player.baseSpeed = speed; player.speed = speed;
+            isGameOver = false; isGameRunning = true; gameOverReason = "";
+            let maze = generateMaze(density); // 벽 개수 전달
+            walls = createWalls(maze);
+            player.x = 20; player.y = 20; resetStatus();
+            items = []; enemies = []; particles = [];
+            items.push({ x: canvas.width - 60, y: canvas.height - 60, size: 40, type: "goal", color: "gold", active: true });
+            let types = ["speedUp", "speedDown", "shield", "confusion", "freeze", "heart"];
+            for (let i = 0; i < 6; i++) {
+                let s = findSafeSpot(); let t = types[Math.floor(Math.random() * types.length)];
+                items.push({ x: s.x, y: s.y, size: 20, type: t, color: getItemColor(t), active: true });
+            }
+            for (let i = 0; i < ghostCnt; i++) {
+                let s = findSafeSpot(); let ax = Math.random() > 0.5 ? 'x' : 'y';
+                enemies.push({ x: s.x, y: s.y, size: 28, speed: Math.max(1.5, speed * 0.4), axis: ax, dir: 1 });
+            }
+            canvas.focus();
+        }
+
+        function generateMaze(density) {
+            let cols = Math.floor(canvas.width / CELL_SIZE), rows = Math.floor(canvas.height / CELL_SIZE);
+            let grid = []; for (let r = 0; r < rows; r++) { let row = []; for (let c = 0; c < cols; c++)row.push({ x: c, y: r, v: false, w: { t: 1, r: 1, b: 1, l: 1 } }); grid.push(row); }
+            let cur = grid[0][0]; cur.v = true; let stack = [cur];
+            while (stack.length) {
+                let ns = [], { x, y } = cur;
+                if (y > 0 && !grid[y - 1][x].v) ns.push({ d: 't', c: grid[y - 1][x] }); if (x < cols - 1 && !grid[y][x + 1].v) ns.push({ d: 'r', c: grid[y][x + 1] });
+                if (y < rows - 1 && !grid[y + 1][x].v) ns.push({ d: 'b', c: grid[y + 1][x] }); if (x > 0 && !grid[y][x - 1].v) ns.push({ d: 'l', c: grid[y][x - 1] });
+                if (ns.length) {
+                    let n = ns[Math.floor(Math.random() * ns.length)];
+                    if (n.d == 't') { cur.w.t = 0; n.c.w.b = 0; } if (n.d == 'r') { cur.w.r = 0; n.c.w.l = 0; }
+                    if (n.d == 'b') { cur.w.b = 0; n.c.w.t = 0; } if (n.d == 'l') { cur.w.l = 0; n.c.w.r = 0; }
+                    n.c.v = true; stack.push(cur); cur = n.c;
+                } else cur = stack.pop();
+            }
+            let total = rows * cols;
+            let percentToRemove = (100 - density) / 100;
+            if (percentToRemove < 0) percentToRemove = 0; if (percentToRemove > 1) percentToRemove = 1;
+            let rm = Math.floor(total * percentToRemove);
+            for (let i = 0; i < rm; i++) {
+                let r = Math.floor(Math.random() * (rows - 1)), c = Math.floor(Math.random() * (cols - 1));
+                if (Math.random() > 0.5) { grid[r][c].w.r = 0; grid[r][c + 1].w.l = 0; } else { grid[r][c].w.b = 0; grid[r + 1][c].w.t = 0; }
+            }
+            return grid;
+        }
+        function createWalls(grid) {
+            let w = []; let cols = grid[0].length, rows = grid.length;
+            w.push({ x: 0, y: 0, w: canvas.width, h: 10 }); w.push({ x: 0, y: canvas.height - 10, w: canvas.width, h: 10 });
+            w.push({ x: 0, y: 0, w: 10, h: canvas.height }); w.push({ x: canvas.width - 10, y: 0, w: 10, h: canvas.height });
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    let cell = grid[r][c], x = c * CELL_SIZE, y = r * CELL_SIZE;
+                    if (cell.w.r) w.push({ x: x + CELL_SIZE - 2, y: y, w: 4, h: CELL_SIZE }); if (cell.w.b) w.push({ x: x, y: y + CELL_SIZE - 2, w: CELL_SIZE, h: 4 });
+                }
+            }
+            return w;
+        }
+        function findSafeSpot() {
+            while (true) {
+                let c = Math.floor(Math.random() * 20), r = Math.floor(Math.random() * 12);
+                if (c < 3 && r < 3) continue; return { x: c * CELL_SIZE + 10, y: r * CELL_SIZE + 10 };
+            }
+        }
+        function getItemColor(t) { return t == "speedUp" ? "#2979FF" : t == "speedDown" ? "#AA00FF" : t == "shield" ? "#00C853" : t == "heart" ? "#D50000" : t == "confusion" ? "#FF6D00" : t == "freeze" ? "#00E5FF" : "white"; }
+        function resetStatus() { if (effectTimer) clearTimeout(effectTimer); player.speed = player.baseSpeed; player.invinc = false; player.confuse = false; player.freeze = false; }
+
+        document.addEventListener("keydown", e => {
+            if (isDebugMode) {
+                if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+                    e.preventDefault(); updateKeyUI(e.key, true);
+                    if (e.key == "ArrowUp") debugKeys.up = true; if (e.key == "ArrowDown") debugKeys.down = true;
+                    if (e.key == "ArrowLeft") debugKeys.left = true; if (e.key == "ArrowRight") debugKeys.right = true;
+                }
+                return;
+            }
+            if (!isGameRunning) { if (e.key === "Enter" && !loginScreen.classList.contains("hidden")) tryLogin(); return; }
+            if (e.key == "ArrowRight") keys.right = true; if (e.key == "ArrowLeft") keys.left = true;
+            if (e.key == "ArrowUp") keys.up = true; if (e.key == "ArrowDown") keys.down = true;
+            if (e.code == "Space" && isGameOver) goToHome();
+        });
+        document.addEventListener("keyup", e => {
+            if (isDebugMode) {
+                updateKeyUI(e.key, false);
+                if (e.key == "ArrowUp") debugKeys.up = false; if (e.key == "ArrowDown") debugKeys.down = false;
+                if (e.key == "ArrowLeft") debugKeys.left = false; if (e.key == "ArrowRight") debugKeys.right = false;
+                return;
+            }
+            if (e.key == "ArrowRight") keys.right = false; if (e.key == "ArrowLeft") keys.left = false;
+            if (e.key == "ArrowUp") keys.up = false; if (e.key == "ArrowDown") keys.down = false;
+        });
+
+        function loop() { if (isGameRunning) { update(); draw(); } requestAnimationFrame(loop); }
+
+        function update() {
+            if (isGameOver) return;
+            for (let i = particles.length - 1; i >= 0; i--) { particles[i].x += particles[i].vx; particles[i].y += particles[i].vy; particles[i].life -= 0.05; if (particles[i].life <= 0) particles.splice(i, 1); }
+            timeLeft -= 1 / 60; if (timeLeft <= 0) { timeLeft = 0; isGameOver = true; gameOverReason = "time"; }
+            uiTime.innerText = "⏰ " + Math.ceil(timeLeft); uiLives.innerText = "❤️ " + lives;
+            for (let e of enemies) {
+                if (e.axis == 'x') { e.x += e.speed * e.dir; if (checkWall(e)) { e.dir *= -1; e.x += e.speed * e.dir * 2; } }
+                else { e.y += e.speed * e.dir; if (checkWall(e)) { e.dir *= -1; e.y += e.speed * e.dir * 2; } }
+                if (!player.invinc && rectColl(player, e)) hit("ghost");
+            }
+            if (player.freeze) return;
+            let mx = 0, my = 0;
+            if (keys.right) mx += player.speed; if (keys.left) mx -= player.speed; if (keys.up) my -= player.speed; if (keys.down) my += player.speed;
+            if (player.confuse) { mx = -mx; my = -my; }
+            let nx = player.x + mx, ny = player.y + my;
+            nx = Math.max(0, Math.min(canvas.width - player.size, nx)); ny = Math.max(0, Math.min(canvas.height - player.size, ny));
+            let tr = { x: nx, y: player.y, size: player.size }; if (!player.invinc && checkWall(tr)) nx = player.x;
+            tr = { x: nx, y: ny, size: player.size }; if (!player.invinc && checkWall(tr)) ny = player.y;
+            player.x = nx; player.y = ny;
+            for (let i of items) {
+                if (i.active && rectColl(player, i)) {
+                    createPart(i.x + 10, i.y + 10, i.color); i.active = false;
+                    if (i.type == "goal") { isGameOver = true; gameOverReason = "clear"; } else applyItem(i);
+                }
+            }
+        }
+        function checkWall(o) { for (let w of walls) { if (rectIntersect(o.x, o.y, o.size, o.size, w.x, w.y, w.w, w.h)) return true; } return false; }
+        function rectColl(a, b) { return rectIntersect(a.x, a.y, a.size, a.size, b.x, b.y, b.size, b.size); }
+        function rectIntersect(x1, y1, w1, h1, x2, y2, w2, h2) { return x2 < x1 + w1 && x2 + w2 > x1 && y2 < y1 + h1 && y2 + h2 > y1; }
+        function hit(t) { lives--; createPart(player.x + 10, player.y + 10, "red"); resetStatus(); player.x = 20; player.y = 20; if (lives <= 0) { isGameOver = true; gameOverReason = "life"; } }
+        function createPart(x, y, c) { for (let i = 0; i < 8; i++)particles.push({ x, y, vx: (Math.random() - .5) * 10, vy: (Math.random() - .5) * 10, life: 1, color: c }); }
+        function applyItem(i) {
+            resetStatus();
+            if (i.type == "heart") lives++; else if (i.type == "speedUp") { player.speed *= 2; resetAfter(3000); }
+            else if (i.type == "speedDown") { player.speed = 2; resetAfter(3000); } else if (i.type == "shield") { player.invinc = true; resetAfter(3000); }
+            else if (i.type == "confusion") { player.confuse = true; resetAfter(3000); } else if (i.type == "freeze") { player.freeze = true; resetAfter(2000); }
+        }
+        function resetAfter(ms) { effectTimer = setTimeout(resetStatus, ms); }
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#78909C"; for (let w of walls) ctx.fillRect(w.x, w.y, w.w, w.h);
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            for (let i of items) {
+                if (i.active) {
+                    let ico = "❓"; if (i.type == "goal") { ico = "⭐"; ctx.font = "40px Arial"; } else {
+                        ctx.font = "24px Arial";
+                        if (i.type == "speedUp") ico = "⚡"; if (i.type == "speedDown") ico = "🐢"; if (i.type == "shield") ico = "🛡️"; if (i.type == "heart") ico = "❤️"; if (i.type == "confusion") ico = "😵"; if (i.type == "freeze") ico = "🧊";
+                    }
+                    ctx.fillText(ico, i.x + i.size / 2, i.y + i.size / 2);
+                }
+            }
+            ctx.font = "30px Arial"; for (let e of enemies) ctx.fillText("👻", e.x + e.size / 2, e.y + e.size / 2);
+            let px = player.x + player.size / 2, py = player.y + player.size / 2, emo = "🐹";
+            if (player.freeze) emo = "🥶"; else if (player.confuse) emo = "😵‍💫"; else if (player.invinc) emo = "😎"; else if (player.speed >= 10) emo = "🚀";
+            ctx.fillText(emo, px, py); if (player.invinc) { ctx.strokeStyle = "white"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(px, py, 18, 0, Math.PI * 2); ctx.stroke(); }
+            for (let p of particles) { ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI * 2); ctx.fill(); } ctx.globalAlpha = 1.0;
+            if (isGameOver) {
+                ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = "white"; ctx.font = "60px 'Jua'"; ctx.textAlign = "center";
+                let t = "", s = ""; if (gameOverReason == "clear") { t = "🎉 성공!"; s = "스페이스바 = 홈으로"; }
+                else if (gameOverReason == "time") { t = "⏰ 시간 초과"; s = "스페이스바 = 홈으로"; } else { t = "😭 으앙 쥬금"; s = "스페이스바 = 홈으로"; }
+                ctx.fillText(t, canvas.width / 2, canvas.height / 2 - 20); ctx.font = "30px 'Jua'"; ctx.fillStyle = "#B0BEC5"; ctx.fillText(s, canvas.width / 2, canvas.height / 2 + 40);
+            }
+        }
+        loop();
+    </script>
+</body>
+
+</html>
